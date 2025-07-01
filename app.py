@@ -1,12 +1,10 @@
 import streamlit as st
 import numpy as np
-import matplotlib.pyplot as plt
-from matplotlib.patches import Ellipse
+from matplotlib.patches import Ellipse  # Importación segura (no causa conflictos)
 
 st.set_page_config(page_title="Simulador de Bulbo Húmedo", layout="centered")
 
 st.title("💧 Simulador de Bulbo Húmedo en Riego por Goteo")
-
 st.markdown("Introduce los datos del suelo y del riego para estimar el perfil húmedo generado por un gotero.")
 
 # Entradas del usuario
@@ -77,7 +75,9 @@ if submitted and calcular:
     st.write(f"**Ancho estimado del bulbo:** {A:.1f} cm")
     st.write(f"**Profundidad estimada del bulbo:** {P:.1f} cm")
 
-    # Gráfico del perfil (elipse)
+    # Importar matplotlib solo cuando se va a usar
+    import matplotlib.pyplot as plt
+
     fig, ax = plt.subplots(figsize=(4, 6))
     bulbo = Ellipse(xy=(0, -P / 2), width=A, height=P,
                     edgecolor='black', facecolor='skyblue', alpha=0.6)
@@ -91,3 +91,4 @@ if submitted and calcular:
     ax.set_title("Perfil estimado del bulbo húmedo")
     ax.set_aspect('equal')
     st.pyplot(fig)
+
