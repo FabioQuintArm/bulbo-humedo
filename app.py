@@ -1,6 +1,6 @@
 import streamlit as st
 import numpy as np
-from matplotlib.patches import Ellipse  # Importación segura (no causa conflictos)
+import plotly.graph_objects as go
 
 st.set_page_config(page_title="Simulador de Bulbo Húmedo", layout="centered")
 
@@ -75,20 +75,25 @@ if submitted and calcular:
     st.write(f"**Ancho estimado del bulbo:** {A:.1f} cm")
     st.write(f"**Profundidad estimada del bulbo:** {P:.1f} cm")
 
-    # Importar matplotlib solo cuando se va a usar
-    import matplotlib.pyplot as plt
+    # Gráfico interactivo con Plotly
+    x = np.linspace(-A/2, A/2, 200)
+    y = -(P/2) * np.sqrt(1 - (x / (A/2))**2)  # semielipse superior
+    y = np.concatenate((y, -y[::-1]))
+    x = np.concatenate((x, x[::-1]))
 
-    fig, ax = plt.subplots(figsize=(4, 6))
-    bulbo = Ellipse(xy=(0, -P / 2), width=A, height=P,
-                    edgecolor='black', facecolor='skyblue', alpha=0.6)
-    ax.add_patch(bulbo)
+    fig = go.Figure()
+    fig.add_trace(go.Scatter(x=x, y=y, fill='toself', name='Bulbo húmedo',
+                             fillcolor='lightblue', line_color='blue'))
 
-    ax.set_xlim(-A, A)
-    ax.set_ylim(-P * 1.1, 5)
-    ax.axhline(0, color='black', linewidth=0.5)
-    ax.set_xlabel("Ancho (cm)")
-    ax.set_ylabel("Profundidad (cm)")
-    ax.set_title("Perfil estimado del bulbo húmedo")
-    ax.set_aspect('equal')
-    st.pyplot(fig)
+    fig.update_layout(
+        title="Perfil estimado del bulbo húmedo",
+        xaxis_title="Ancho (cm)",
+        yaxis_title="Profundidad (cm)",
+        yaxis=dict(autorange='reversed'),  # profundidad hacia abajo
+        width=500,
+        height=600,
+        showlegend=False
+    )
+
+    st.plotly_chart(fig)
 
